@@ -1,1 +1,1 @@
-#some output files
+output files from opnmf analysis of hc microstructure
