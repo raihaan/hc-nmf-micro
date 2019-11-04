@@ -30,13 +30,13 @@ for i in range(0,n_splits):
     
     for g in range(2,max_gran+1):
         #load split input, run nmf for each split
-        fname = stab_dir + "k" + str(g) + "/leftA_" + str(i) + "_res.mat" 
+        fname = stab_dir + "k" + str(g) + "/leftA_" + str(i) + "_res.mat" #MODIFY as needed
         print fname
         resA = scipy.io.loadmat(fname)
         Wa = resA['W']
         ea = resA['recon'][0,0]
         
-        fname = stab_dir + "k" + str(g) + "/leftB_" + str(i) + "_res.mat" 
+        fname = stab_dir + "k" + str(g) + "/leftB_" + str(i) + "_res.mat"  #MODIFY as needed
         print fname
         resB = scipy.io.loadmat(fname)
         Wb = resB['W']
@@ -50,7 +50,6 @@ for i in range(0,n_splits):
         euclid_dist = np.zeros((1,np.shape(c_Wa)[0]))
         corr = np.zeros((1,np.shape(c_Wa)[0]))
 
-        #euclid_dist = np.diag(scipy.spatial.distance_matrix(c_Wa, c_Wb))
         for parcel in range(0,np.shape(c_Wa)[0]):
             cosine_dist[0,parcel] = scipy.spatial.distance.cosine(c_Wa[parcel,:], c_Wb[parcel,:])
             euclid_dist[0,parcel] = scipy.spatial.distance.euclidean(c_Wa[parcel,:], c_Wb[parcel,:])
@@ -62,7 +61,5 @@ for i in range(0,n_splits):
         df.to_csv(out_dir + 'temppnmf_cosine-sim_lefthc_corr.csv')
         del Wa,Wb,ea,eb,resA,resB
     
-    #print(g, " end " , (datetime.datetime.now()))
-
 df.to_csv(out_dir + 'pnmf_cosine-sim_lefthc_corr.csv')
 del df, df_curr
