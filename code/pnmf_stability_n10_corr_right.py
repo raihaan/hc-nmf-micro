@@ -7,24 +7,11 @@ import scipy
 import scipy.io
 import pickle
 
-
 import sys
-sys.path.append('/data/chamal/projects/raihaan/HCP/HCP900/scripts/TractREC/working/TractREC/TractREC/')
-#from TractREC import * #my custom stuff
-import t1t2_outlier_correction as outlier
-import TractREC as tr
 import sklearn
-from sklearn.decomposition import NMF
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn import preprocessing
-
-from sklearn.decomposition import NMF
 import random
 from sklearn.model_selection import StratifiedShuffleSplit
-import datetime
-
-
-df_sorted = pd.read_csv('/data/chamal/projects/raihaan/projects/inprogress/hc-nmf-micro/raw_data/sheets/df_sorted_unrestricted_329.csv')
 
 n_subjects = 329
 n_splits = 10
@@ -32,24 +19,24 @@ max_gran = 10
 
 out_dir = "n" + str(n_splits) + "/"
 
-
 cols = ["Granularity","Iteration","Euclidean_mean","Euclidean_median","Euclidean_std","Cosine_mean","Cosine_median","Cosine_std","Corr_mean","Corr_median","Corr_std","Recon_errorA","Recon_errorB"]
 df = pd.DataFrame(columns = cols)
 
 stab_dir = "/data/chamal/projects/raihaan/projects/inprogress/hc-nmf-micro/analysis/329subject_singleshellNMF/stability/n10/pnmf_out/"
+stab_dir = "" #MODIFY to point to dir containing nmf outputs of each split of data 
 
 #RIGHT HC STABILITY
 for i in range(0,n_splits):
     
     for g in range(2,max_gran+1):
         #load split input, run nmf for each split
-        fname = stab_dir + "k" + str(g) + "/rightA_" + str(i) + "_res.mat" 
+        fname = stab_dir + "k" + str(g) + "/rightA_" + str(i) + "_res.mat" #MODIFY as needed
         print fname
         resA = scipy.io.loadmat(fname)
         Wa = resA['W']
         ea = resA['recon'][0,0]
         
-        fname = stab_dir + "k" + str(g) + "/rightB_" + str(i) + "_res.mat" 
+        fname = stab_dir + "k" + str(g) + "/rightB_" + str(i) + "_res.mat" #MODIFY as needed
         print fname
         resB = scipy.io.loadmat(fname)
         Wb = resB['W']
@@ -63,7 +50,6 @@ for i in range(0,n_splits):
         euclid_dist = np.zeros((1,np.shape(c_Wa)[0]))
         corr = np.zeros((1,np.shape(c_Wa)[0]))
 
-        #euclid_dist = np.diag(scipy.spatial.distance_matrix(c_Wa, c_Wb))
         for parcel in range(0,np.shape(c_Wa)[0]):
             cosine_dist[0,parcel] = scipy.spatial.distance.cosine(c_Wa[parcel,:], c_Wb[parcel,:])
             euclid_dist[0,parcel] = scipy.spatial.distance.euclidean(c_Wa[parcel,:], c_Wb[parcel,:])
@@ -76,7 +62,5 @@ for i in range(0,n_splits):
         df.to_csv(out_dir + 'temppnmf_cosine-sim_righthc_corr.csv')
         del Wa,Wb,ea,eb,resA,resB
     
-    #print(g, " end " , (datetime.datetime.now()))
-
 df.to_csv(out_dir + 'pnmf_cosine-sim_righthc_corr.csv')
 del df, df_curr
